@@ -1,0 +1,115 @@
+<!doctype html><html><head><meta charset=utf-8><meta name=viewport content='width=device-width,initial-scale=1'><title>How copying works — Sure Copy</title><style>body{max-width:760px;margin:40px auto;padding:0 20px;font:16px/1.6 -apple-system,Segoe UI,Roboto,sans-serif;color:#172B4D}h1,h2,h3{color:#0747A6;line-height:1.25}code{background:#F4F5F7;padding:1px 5px;border-radius:4px;font-size:.9em}pre{background:#F4F5F7;padding:14px;border-radius:8px;overflow:auto}a{color:#0052CC}nav{margin:0 0 30px;padding-bottom:14px;border-bottom:1px solid #DFE1E6;font-size:14px}nav a{margin-right:14px}.brand{font-weight:700;color:#0052CC}footer{margin-top:50px;padding-top:16px;border-top:1px solid #DFE1E6;color:#6B778C;font-size:13px}</style></head><body><nav><span class="brand">Sure Copy</span> · <a href="index.html">Docs home</a> <a href="getting-started.html">Getting started</a> <a href="how-copying-works.html">How it works</a> <a href="limitations.html">Limitations</a> <a href="troubleshooting.html">Troubleshooting</a> <a href="faq.html">FAQ</a> · <a href="privacy.html">Privacy</a> <a href="eula.html">EULA</a></nav><h1>How copying works</h1>
+
+<p>This page explains what Sure Copy actually does when it copies a space — in particular how link rewriting works, because that&#x27;s the difference between a copy that works and a copy that quietly points back at the original. No prior knowledge of Confluence internals required.</p>
+
+<h2>The short version</h2>
+
+<p>A copy runs in three phases:</p>
+
+<p>1. <strong>Preparing</strong> — the app reads the full page list of the source space and creates the destination space.</p>
+<p>2. <strong>Creating pages</strong> — every page is recreated in the new space in hierarchy order (parents before children), along with its attachments and labels. The app keeps a running map of *source page → its copy*.</p>
+<p>3. <strong>Rewriting links</strong> — each copied page&#x27;s content is then written in full, with every internal reference re-pointed at the copies using that map.</p>
+
+<p>The job runs in the background on Atlassian&#x27;s infrastructure, in short batches, and records exactly what it did — including anything it chose *not* to rewrite, and why.</p>
+
+<h2>What gets copied</h2>
+
+<p>| Content | Copied? | Notes |</p>
+<p>|---|---|---|</p>
+<p>| Pages (current published versions) | Yes | Recreated in the new space; version history is not carried over |</p>
+<p>| Page hierarchy | Yes | Parent/child structure preserved exactly |</p>
+<p>| Titles, including special characters and emoji in the title text | Yes | |</p>
+<p>| Attachments | Yes (option, default on) | Downloaded from the source page, uploaded to its copy |</p>
+<p>| Labels | Yes (option, default on) | Re-applied per page |</p>
+<p>| Internal links | Yes — <strong>rewritten</strong> | The subject of the rest of this page |</p>
+<p>| Space homepage | Yes | Merged into the new space&#x27;s homepage by default; see <a href="#homepage-handling-merge-vs-nest">homepage handling</a> |</p>
+
+<p>What is *not* copied — inline comments, whiteboards, databases, folders, blog posts, space permissions, and a few more — is itemised honestly in <a href="limitations.md">Limitations</a>.</p>
+
+<p>Every release of Sure Copy has to pass an automated end-to-end correctness battery: real copies of a fixture space on a live Confluence Cloud site, verified check by check — attachments, macros with references, legacy URLs, awkward titles, deep nesting, large bodies. If a check fails, the release doesn&#x27;t ship.</p>
+
+<h2>Why links break in naive copies</h2>
+
+<p>Here&#x27;s the problem every copy tool has to solve, and most don&#x27;t.</p>
+
+<p>Confluence stores page content in an XML-based &quot;storage format&quot;. A link to another Confluence page isn&#x27;t stored as visible text — it&#x27;s stored as a *reference*, in one of several shapes:</p>
+
+<ul>
+<li>A <strong>page reference</strong>: &quot;the page titled *Budget 2026* in space *MKT*&quot;. This is what you get when you type <code>/link</code> or paste a page link — and it&#x27;s also how macros like <strong>Include Page</strong> and <strong>Excerpt Include</strong> point at their source pages.</li>
+<li>A <strong>URL</strong>: <code>/wiki/spaces/MKT/pages/12345/Budget-2026</code>, where <code>12345</code> is the page&#x27;s unique ID.</li>
+<li>A <strong>legacy URL</strong>: <code>/wiki/display/MKT/Budget+2026</code>, the older title-based format that still lives in thousands of long-lived spaces.</li>
+<li>A <strong>short link</strong>: <code>/wiki/x/AbCdE</code>, an opaque code that Confluence resolves server-side.</li>
+</ul>
+
+<p>Notice what all of these have in common: they name the *original* space or the *original* page ID. A naive copy — one that just duplicates page content byte for byte — preserves every one of these references verbatim. The copy looks perfect. Then someone clicks a link, and they&#x27;re silently back in the source space. Every internal link, every Include Page macro, every image that references an attachment on another page: all still wired to the original.</p>
+
+<p>This is the single most commonly reported failure of space and page-tree copies in Confluence, and it&#x27;s insidious because nothing *looks* broken. Readers just quietly end up in the wrong space — or, if the source space is later archived or deleted, at a dead link.</p>
+
+<h2>What Sure Copy rewrites</h2>
+
+<p>During the copy, the app builds an <strong>ID map</strong>: every source page ID paired with the ID of its copy, plus the set of page titles included in the copy. In the rewrite phase, it parses each page&#x27;s storage format with a real XML parser — not find-and-replace — and walks every reference:</p>
+
+<ul>
+<li><strong>Page references</strong> (<code>ri:page</code> elements) whose space is the source space and whose title is in the copied set have their space key flipped to the new space. This works wherever the reference appears — in a link, inside a macro body such as Include Page or Excerpt Include, or inside a cross-page attachment reference — regardless of attribute order or entity-encoded titles.</li>
+<li><strong>Page URLs</strong> (<code>/spaces/SRC/pages/12345/...</code>) are rewritten to the new space key *and* the new page ID, using the ID map. This applies to URLs in link attributes and to URLs pasted as bare text in the page body. The slug and any <code>#anchor</code> suffix are preserved untouched.</li>
+<li><strong>Legacy <code>/display/SRC/Page+Title</code> URLs</strong> are rewritten to the new space key when the title (after decoding the <code>+</code>-and-percent encoding) is in the copied set. Anchors survive here too.</li>
+<li><strong>Cross-page attachment references</strong> — an image on page A that displays a file attached to page B — are fixed by the same page-reference rewrite, so they resolve to page B&#x27;s copy.</li>
+</ul>
+
+<p>The rewriting is *surgical*: only the exact span being changed is touched. Everything else in the page — attribute order, whitespace, entity encoding, macro structure — survives byte for byte. And it&#x27;s idempotent: running the rewrite over its own output changes nothing, which matters for <a href="#large-spaces-batching-progress-and-resume">resume</a>.</p>
+
+<h2>What Sure Copy deliberately leaves alone</h2>
+
+<p>Just as important as what gets rewritten is what doesn&#x27;t. These are judgment calls, and here&#x27;s each one:</p>
+
+<ul>
+<li><strong>Links to pages outside the copied set.</strong> If a page links to another space, or to a page that isn&#x27;t part of this copy, the link still points where it should — so it&#x27;s left exactly as-is. Rewriting it would break it.</li>
+<li><strong>External URLs.</strong> Absolute URLs to other sites (or anything that isn&#x27;t clearly a link within your Confluence site) are never touched.</li>
+<li><strong>Code blocks and preformatted content.</strong> A URL someone typed inside a code macro is content, not navigation. It&#x27;s left alone by design.</li>
+<li><strong><code>/x/</code> short links.</strong> These are opaque codes that can&#x27;t be mechanically translated to the new space. Sure Copy does not rewrite them — instead, each occurrence is recorded as a warning on the job so you know exactly which pages contain short links that still point at the original. (Rewriting them properly is on the roadmap.)</li>
+<li><strong>Duplicate titles.</strong> Confluence Cloud can allow two pages with the same title, which makes title-based references ambiguous. Sure Copy rewrites the reference and records an &quot;ambiguous: duplicate title&quot; warning against the page so you can spot-check it.</li>
+</ul>
+
+<h2>The warnings system</h2>
+
+<p>Anything the rewriter skipped or was unsure about is recorded as a warning on the job, tagged with the page title it occurred on — for example:</p>
+
+<ul>
+<li><code>&#x27;Team charter&#x27;: shortlink: not rewritten (resolve upstream): /wiki/x/AbCdE</code></li>
+<li><code>&#x27;Roadmap&#x27;: skipped: ri:page title not in copied set — left pointing at MKT: &quot;Archive index&quot;</code></li>
+<li><code>&#x27;Budget 2026&#x27;: ambiguous: duplicate title in copied set — ri:page link rewritten by title: &quot;Notes&quot;</code></li>
+</ul>
+
+<p>The philosophy: <strong>when in doubt, don&#x27;t touch it — and say so.</strong> A link that&#x27;s cautiously left pointing at the source is recoverable; a link that&#x27;s confidently rewritten to the wrong place is not. Warnings are stored with the job record (up to 100 per job), and per-page errors are shown directly in the progress view. If you ever find an internal link that *should* have been rewritten and wasn&#x27;t — with no warning — we treat that as our highest-severity bug. Email support@nobo.dev.</p>
+
+<h2>Homepage handling: merge vs nest</h2>
+
+<p>Confluence automatically creates a homepage for every new space, so a space copy has to decide what to do with the *source* space&#x27;s homepage. Sure Copy gives you the choice:</p>
+
+<ul>
+<li><strong>Merge (default).</strong> The source homepage&#x27;s content is written into the new space&#x27;s automatically created homepage, links rewritten like any other page. The destination homepage keeps its own title (which matches the new space&#x27;s name). Every link that pointed at the source homepage now points at the destination homepage. Result: one homepage, no stray duplicate. This is right for almost everyone.</li>
+<li><strong>Nest.</strong> The source homepage is copied as its own page, placed as a child of the new space&#x27;s homepage, keeping its original title. Pick this if the source homepage is a real content page in its own right and you want it preserved verbatim as a page.</li>
+</ul>
+
+<h2>Large spaces: batching, progress, and resume</h2>
+
+<p>Confluence Cloud sets firm limits on how long any single background operation may run, and rate-limits API traffic. Sure Copy is built for that reality rather than around it:</p>
+
+<ul>
+<li><strong>Time-budgeted batches.</strong> The job processes pages until it approaches a ~15-second budget, saves its state, and re-queues itself. A large space is hundreds of these small batches, each one checkpointed. The &quot;engine invocations&quot; counter in the progress view is this mechanism made visible.</li>
+<li><strong>Rate limiting is handled, not fatal.</strong> If Confluence returns a rate-limit response, the job saves its state and reschedules itself after the delay Confluence asks for (up to a 15-minute pause). This looks like the copy going quiet for a while; it is not a failure. It resumes on its own.</li>
+<li><strong>Every create is checked first.</strong> Before creating a page, the app checks whether that page already exists in the destination. Combined with the persistent ID map, this makes the whole engine resume-safe: if a job is interrupted and retried, already-copied pages are found and reused — never duplicated. (The exact retry semantics are in <a href="troubleshooting.md#the-copy-was-interrupted--will-retrying-duplicate-everything">Troubleshooting</a>.)</li>
+<li><strong>One bad page never kills the job.</strong> If an individual page fails to copy — an exotic macro, a permission anomaly — the error is recorded against that page and the job carries on. The progress view lists every page-level issue.</li>
+</ul>
+
+<p>Progress is polled every few seconds; the progress bar spans both page walks (creating, then rewriting), so 50% means &quot;all pages created, rewriting about to begin&quot;.</p>
+
+<h2>What to check after your first copy</h2>
+
+<p>1. Open the new space&#x27;s homepage — the source homepage content should be there (under <strong>merge</strong>, the default).</p>
+<p>2. Open two or three pages that link to each other. Hover the links: the URLs should contain the *new* space key and new page IDs.</p>
+<p>3. Open a page with images and attachments — they should render from the copy, not the source.</p>
+<p>4. Check the completion summary against expectations: pages, attachments, labels counts, and the page-issues panel if present.</p>
+
+<p>If anything in that list surprises you, <a href="troubleshooting.md">Troubleshooting</a> covers the likely causes — and support@nobo.dev covers the rest.</p>
+<footer>Sure Copy — copy Confluence spaces &amp; page trees with links intact. by nobo · support@nobo.dev</footer></body></html>

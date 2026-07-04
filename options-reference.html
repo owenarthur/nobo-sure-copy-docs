@@ -1,0 +1,60 @@
+<!doctype html><html><head><meta charset=utf-8><meta name=viewport content='width=device-width,initial-scale=1'><title>Options reference — Sure Copy</title><style>body{max-width:760px;margin:40px auto;padding:0 20px;font:16px/1.6 -apple-system,Segoe UI,Roboto,sans-serif;color:#172B4D}h1,h2,h3{color:#0747A6;line-height:1.25}code{background:#F4F5F7;padding:1px 5px;border-radius:4px;font-size:.9em}pre{background:#F4F5F7;padding:14px;border-radius:8px;overflow:auto}a{color:#0052CC}nav{margin:0 0 30px;padding-bottom:14px;border-bottom:1px solid #DFE1E6;font-size:14px}nav a{margin-right:14px}.brand{font-weight:700;color:#0052CC}footer{margin-top:50px;padding-top:16px;border-top:1px solid #DFE1E6;color:#6B778C;font-size:13px}</style></head><body><nav><span class="brand">Sure Copy</span> · <a href="index.html">Docs home</a> <a href="getting-started.html">Getting started</a> <a href="how-copying-works.html">How it works</a> <a href="limitations.html">Limitations</a> <a href="troubleshooting.html">Troubleshooting</a> <a href="faq.html">FAQ</a> · <a href="privacy.html">Privacy</a> <a href="eula.html">EULA</a></nav><h1>Options reference</h1>
+
+<p>Everything you can set when starting a copy, what the default is, and exactly what each choice does. In the current version, every copy goes from an existing space you can view into a <strong>brand-new space the app creates</strong> — the form fields and options below are the complete surface.</p>
+
+<h2>The form</h2>
+
+<h3>Source space</h3>
+
+<p>The space to copy. The dropdown is searchable and lists <strong>only spaces you can view</strong> — the app checks your own permissions, not its own, so you can&#x27;t copy content you couldn&#x27;t otherwise see at the space level.</p>
+
+<h3>New space name</h3>
+
+<p>The display name for the destination space. Required. The app creates the space with this name during the *Preparing* phase.</p>
+
+<h3>New space key</h3>
+
+<p>The key for the destination space. Rules:</p>
+
+<ul>
+<li>Must start with a letter; letters and numbers only. The field flags anything else as invalid, and the same rule is enforced again when you press <strong>Start copy</strong> (&quot;Space key must start with a letter and contain only letters and numbers.&quot;).</li>
+<li><strong>Auto-suggested from the name</strong> as you type: letters and digits are kept, everything else dropped, uppercased, trimmed to 10 characters — &quot;Marketing Handbook 2026&quot; suggests <code>MARKETINGH</code>. If the name starts with a digit, an <code>S</code> is prefixed. Once you edit the key by hand, it stops auto-updating.</li>
+<li>Must be <strong>different from the source space&#x27;s key</strong>, and <strong>not already in use</strong> on your site. Both are checked before the job starts; you&#x27;ll get a plain message either way (e.g. <code>A space with key &quot;MKT2&quot; already exists. Choose a different key.</code>).</li>
+</ul>
+
+<h2>Options</h2>
+
+<p>| Option | Default | What it does |</p>
+<p>|---|---|---|</p>
+<p>| <strong>Copy attachments</strong> | On | For every page, downloads each attachment from the source and uploads it to the page&#x27;s copy. References to attachments — including images on one page that display a file attached to another — resolve correctly in the copy because page references are rewritten (see <a href="how-copying-works.md#what-appname-rewrites">How copying works</a>). Turn it off for a structure-and-text-only copy; the copy&#x27;s attachment counter will read 0 and any attachment references in page bodies will still point at files in the source space. |</p>
+<p>| <strong>Copy labels</strong> | On | Re-applies every label on every source page to its copy, preserving the label&#x27;s prefix. A failure to copy one page&#x27;s labels is recorded as a page-level issue and the job continues. |</p>
+<p>| <strong>Source homepage handling</strong> | Merge | See below — this is the one option worth thirty seconds of thought. |</p>
+
+<h3>Source homepage handling: merge vs nest</h3>
+
+<p>Confluence auto-creates a homepage in every new space, so the source homepage needs a decision:</p>
+
+<ul>
+<li><strong>Merge source homepage content into the destination homepage</strong> *(default, recommended)* — the source homepage&#x27;s content (links rewritten) is written into the auto-created destination homepage, which keeps its own title. No extra page is created; anything that linked to the source homepage now links to the destination homepage. One space, one homepage.</li>
+<li><strong>Copy source homepage as a child page of the destination homepage</strong> — the source homepage becomes its own page, with its original title, nested directly under the new space&#x27;s homepage. Choose this when the source homepage is a genuine content page you want preserved as-is, or when the destination homepage should stay a clean landing page.</li>
+</ul>
+
+<p>Either way, links *to* the homepage are remapped correctly — merge maps them to the destination homepage, nest maps them to the copied page.</p>
+
+<h2>Per-option interactions and fine print</h2>
+
+<ul>
+<li><strong>Options are fixed at start.</strong> They&#x27;re stored with the job when you press <strong>Start copy</strong>; you can&#x27;t change them mid-copy. If a failed job is retried, it retries with its original options.</li>
+<li><strong>Attachments and labels count toward the completion summary</strong> (&quot;151 pages copied, 96 attachments, 210 labels&quot;) only when their option is on.</li>
+<li><strong>What you can&#x27;t choose (yet):</strong> copying into an *existing* space or under a parent page, copying a single page tree rather than a whole space, copying footer comments, and copying blog posts are not options in the current version. See <a href="limitations.md">Limitations</a> for the full honest list and the roadmap note.</li>
+</ul>
+
+<h2>What happens when you press Start copy</h2>
+
+<p>In order, before any content is touched:</p>
+
+<p>1. Field validation (source chosen, name present, key valid, key ≠ source key).</p>
+<p>2. <strong>Permission check, as you:</strong> the app verifies that *your* account can view the source space. If not: <code>You don&#x27;t have permission to view space &quot;KEY&quot; (or it doesn&#x27;t exist). Ask a space admin for access, then try again.</code></p>
+<p>3. <strong>Destination key check:</strong> the key must not belong to an existing space.</p>
+<p>4. The job is created and queued. The view switches to live progress, and the job appears in <strong>Recent copies</strong> (the history keeps your 20 most recent jobs).</p>
+<footer>Sure Copy — copy Confluence spaces &amp; page trees with links intact. by nobo · support@nobo.dev</footer></body></html>

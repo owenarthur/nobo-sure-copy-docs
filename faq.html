@@ -1,0 +1,69 @@
+<!doctype html><html><head><meta charset=utf-8><meta name=viewport content='width=device-width,initial-scale=1'><title>FAQ — Sure Copy</title><style>body{max-width:760px;margin:40px auto;padding:0 20px;font:16px/1.6 -apple-system,Segoe UI,Roboto,sans-serif;color:#172B4D}h1,h2,h3{color:#0747A6;line-height:1.25}code{background:#F4F5F7;padding:1px 5px;border-radius:4px;font-size:.9em}pre{background:#F4F5F7;padding:14px;border-radius:8px;overflow:auto}a{color:#0052CC}nav{margin:0 0 30px;padding-bottom:14px;border-bottom:1px solid #DFE1E6;font-size:14px}nav a{margin-right:14px}.brand{font-weight:700;color:#0052CC}footer{margin-top:50px;padding-top:16px;border-top:1px solid #DFE1E6;color:#6B778C;font-size:13px}</style></head><body><nav><span class="brand">Sure Copy</span> · <a href="index.html">Docs home</a> <a href="getting-started.html">Getting started</a> <a href="how-copying-works.html">How it works</a> <a href="limitations.html">Limitations</a> <a href="troubleshooting.html">Troubleshooting</a> <a href="faq.html">FAQ</a> · <a href="privacy.html">Privacy</a> <a href="eula.html">EULA</a></nav><h1>FAQ</h1>
+
+<h2>How is this different from Confluence&#x27;s built-in copy?</h2>
+
+<p>Confluence Cloud&#x27;s native copy works page-by-page (with an option to include child pages). It&#x27;s fine for small jobs, but it has no space-level copy at all — there is no native &quot;copy this space&quot; — and the copies it makes keep their internal links pointing at the original pages, which is exactly the problem for a self-contained duplicate. It also gives you no itemised outcome report and no resumable background job for large trees.</p>
+
+<p>Sure Copy copies an entire space in one operation, rewrites every internal link to point at the copies, includes attachments and labels, shows live progress, and survives interruptions without duplicating pages. The full mechanics are in <a href="how-copying-works.md">How copying works</a>.</p>
+
+<h2>How is this different from Copy Space or Copy Page Tree?</h2>
+
+<p>Those are established Connect-era apps facing Atlassian&#x27;s Connect end of support; Sure Copy is built on Forge, Atlassian&#x27;s current platform, which among other things means your content never leaves Atlassian&#x27;s infrastructure. We&#x27;ve written factual, feature-by-feature comparisons — including what those apps do that we don&#x27;t — in our migration guides:</p>
+
+<ul>
+<li>*Copy Space for Confluence: end of support, and what to do about it* ({DOCS_URL} — insert link at publication)</li>
+<li>*Copy Page Tree alternative: copying page trees between spaces without breaking links* ({DOCS_URL} — insert link at publication)</li>
+</ul>
+
+<h2>Does my content leave Atlassian?</h2>
+
+<p>No. Sure Copy is Forge-native: it runs on Atlassian&#x27;s own infrastructure, calls only Confluence&#x27;s APIs, and makes no calls to any external service — no third-party servers, no external analytics. Zero egress. Job records (see below) live in Forge storage on Atlassian infrastructure and inherit your site&#x27;s data residency.</p>
+
+<h2>What data does the app store?</h2>
+
+<p>Job metadata only: which space was copied to which, the options chosen, progress state, the source-page-to-copy ID map, page titles, per-page error strings, and the account ID of the person who started the copy. Page content passes through the copy operation and is not retained beyond it. The app keeps your 20 most recent job records; older ones are deleted automatically.</p>
+
+<h2>What scopes does the app request, and why?</h2>
+
+<p>| Scope | Why |</p>
+<p>|---|---|</p>
+<p>| Read/write <strong>spaces</strong> | List spaces you can view; create the destination space |</p>
+<p>| Read/write <strong>pages</strong> | Read source pages; create and rewrite their copies |</p>
+<p>| Read/write <strong>attachments</strong> (incl. the classic file-write scope) | Download source attachments and upload them to the copies — attachment upload still requires the classic Confluence scope; there is no newer equivalent |</p>
+<p>| Read/write <strong>labels</strong> | Copy each page&#x27;s labels |</p>
+<p>| <strong>App storage</strong> | Job records and progress state |</p>
+
+<p>Notably absent: no admin scopes, no user management, no permission management. This is deliberate — see <a href="limitations.md#space-permissions--not-copied-by-design">Limitations</a>.</p>
+
+<h2>Who can use the app, and whose permissions apply?</h2>
+
+<p>Anyone who can open the app can start a copy — but only of a space *they* can view: the app checks your permission on the source space, as you, before the job is created. The destination is a new space created with your site&#x27;s default permissions.</p>
+
+<h2>How does pricing work? Is it really free for small teams?</h2>
+
+<p>Sure Copy is Paid via Atlassian with standard Marketplace per-user pricing — billing, invoicing, and the price ramp are all handled by Atlassian alongside your other Atlassian bills. As with Marketplace-standard pricing, sites with 10 or fewer users pay nothing. The current price per user is on the Marketplace listing, which is always authoritative.</p>
+
+<h2>Can I copy between two Confluence sites?</h2>
+
+<p>Not currently. Sure Copy works within one site; cross-site copying is a different security model (it would require content to cross the site boundary, which this app never does). See <a href="limitations.md#copying-between-two-confluence-sites--not-supported">Limitations</a>.</p>
+
+<h2>Can I copy a single page tree instead of a whole space?</h2>
+
+<p>Not yet — every copy currently produces a new space containing the whole source space. A &quot;copy page tree&quot; action (copy a page and its descendants into a chosen space) is on the roadmap. If you need it, say so: support@nobo.dev — demand ordering is real.</p>
+
+<h2>Can I schedule recurring copies, or use a space as a template?</h2>
+
+<p>Not built in yet. Plenty of people use a one-off copy exactly like a template (&quot;copy the Handbook space each time we spin up a client&quot;), and that works today — it&#x27;s just manual. Scheduled/recurring copies are a roadmap candidate; tell us your use case.</p>
+
+<h2>Can I cancel a running copy?</h2>
+
+<p>Not in the current version — a running job runs to completion (or failure). Since every copy targets a brand-new space, an unwanted copy is cleanly disposable: let it finish, then delete the destination space from Confluence&#x27;s space settings.</p>
+
+<h2>What happens to the app&#x27;s data when I uninstall?</h2>
+
+<p>The app&#x27;s stored data — job records and state, as described above — is deleted in line with our privacy policy and Atlassian&#x27;s Forge platform data-deletion behaviour for uninstalled apps. The spaces and pages the app created are ordinary Confluence content and remain exactly where they are; uninstalling never touches your content.</p>
+
+<h2>Something else?</h2>
+
+<p><a href="troubleshooting.md">Troubleshooting</a> covers the operational questions; <a href="limitations.md">Limitations</a> is the honest inventory of what isn&#x27;t copied. For everything else: <strong>support@nobo.dev</strong>.</p>
+<footer>Sure Copy — copy Confluence spaces &amp; page trees with links intact. by nobo · support@nobo.dev</footer></body></html>

@@ -1,0 +1,58 @@
+<!doctype html><html><head><meta charset=utf-8><meta name=viewport content='width=device-width,initial-scale=1'><title>Getting started — Sure Copy</title><style>body{max-width:760px;margin:40px auto;padding:0 20px;font:16px/1.6 -apple-system,Segoe UI,Roboto,sans-serif;color:#172B4D}h1,h2,h3{color:#0747A6;line-height:1.25}code{background:#F4F5F7;padding:1px 5px;border-radius:4px;font-size:.9em}pre{background:#F4F5F7;padding:14px;border-radius:8px;overflow:auto}a{color:#0052CC}nav{margin:0 0 30px;padding-bottom:14px;border-bottom:1px solid #DFE1E6;font-size:14px}nav a{margin-right:14px}.brand{font-weight:700;color:#0052CC}footer{margin-top:50px;padding-top:16px;border-top:1px solid #DFE1E6;color:#6B778C;font-size:13px}</style></head><body><nav><span class="brand">Sure Copy</span> · <a href="index.html">Docs home</a> <a href="getting-started.html">Getting started</a> <a href="how-copying-works.html">How it works</a> <a href="limitations.html">Limitations</a> <a href="troubleshooting.html">Troubleshooting</a> <a href="faq.html">FAQ</a> · <a href="privacy.html">Privacy</a> <a href="eula.html">EULA</a></nav><h1>Getting started</h1>
+
+<p>Sure Copy copies a whole Confluence space — pages, hierarchy, attachments, labels — into a brand-new space, and rewrites the internal links so the copy points at itself rather than back at the original.</p>
+
+<p>This page gets you from install to your first finished copy. It takes about two minutes plus however long the copy itself runs.</p>
+
+<h2>Install</h2>
+
+<p>1. Find Sure Copy on the Atlassian Marketplace and choose <strong>Install</strong> (you need to be a site admin to install apps, or ask your admin to).</p>
+<p>2. During installation, Confluence shows the permissions the app requests. Sure Copy asks only for what copying needs: read and write access to spaces, pages, attachments, and labels, plus its own app storage for job records. It requests no admin scopes and sends nothing outside Atlassian — see the <a href="faq.md#what-scopes-does-the-app-request-and-why">FAQ</a> for the full scope list with justifications.</p>
+
+<p>*Screenshot: Marketplace install dialog showing the scope list.*</p>
+
+<h2>What you need before you start</h2>
+
+<ul>
+<li><strong>Read access to the source space.</strong> The app checks, before anything runs, that *you* can view the space you&#x27;re copying. If you can&#x27;t see it, the copy won&#x27;t start.</li>
+<li><strong>A free space key for the destination.</strong> The copy always goes into a brand-new space that the app creates. If the key you pick is already taken, you&#x27;ll be told before anything starts.</li>
+</ul>
+
+<h2>Your first copy</h2>
+
+<p>1. <strong>Open the app.</strong> In Confluence, go to <strong>Apps → Sure Copy</strong>.</p>
+<p>2. <strong>Pick the source space.</strong> The dropdown lists only spaces you can view. It&#x27;s searchable — start typing the space name.</p>
+<p>3. <strong>Name the new space.</strong> Type a name (e.g. &quot;Marketing Handbook (Copy)&quot;). A space key is suggested automatically from the name — edit it if you want a specific key. Keys must start with a letter and contain only letters and numbers.</p>
+<p>4. <strong>Choose your options.</strong> Attachments and labels are copied by default; homepage handling defaults to merging the source homepage into the new space&#x27;s homepage. See the <a href="options-reference.md">Options reference</a> — the defaults are right for most copies.</p>
+<p>5. <strong>Start the copy.</strong> Click <strong>Start copy</strong>. The view switches to live progress.</p>
+
+<p>*Screenshot: the copy form with a source space selected and options visible.*</p>
+
+<h2>Watching it run</h2>
+
+<p>The progress view updates every few seconds and walks through three phases:</p>
+
+<p>1. <strong>Preparing</strong> — reading the source space and creating the destination.</p>
+<p>2. <strong>Creating pages</strong> — every page is created in the new space, in hierarchy order, with attachments and labels. You&#x27;ll see &quot;Creating pages: 47 of 151&quot;.</p>
+<p>3. <strong>Rewriting links</strong> — every copied page&#x27;s body is written with internal links re-pointed at the copies. You&#x27;ll see &quot;Rewriting links: 12 of 151&quot;.</p>
+
+<p>You can leave the page at any time — the copy runs in the background on Atlassian&#x27;s infrastructure, not in your browser tab. The <strong>Back (copy keeps running)</strong> button says exactly what it does; the job also appears under <strong>Recent copies</strong>, where <strong>View</strong> brings the progress screen back.</p>
+
+<p>*Screenshot: progress view mid-copy showing the phase lozenge and progress bar.*</p>
+
+<h2>When it finishes</h2>
+
+<p>You&#x27;ll see a completion summary — for example, &quot;151 pages copied, 96 attachments, 210 labels&quot; — with a link to <strong>Open the new space</strong>. If any individual pages hit problems, they&#x27;re listed in a panel on the same screen; one problem page never stops the rest of the copy (see <a href="troubleshooting.md#something-didnt-get-copied">Troubleshooting</a>).</p>
+
+<p>Worth a minute after your first copy: open a few pages in the new space and hover over their internal links — they point at pages *inside the new space*, which is the whole point. What the app doesn&#x27;t copy (inline comments, whiteboards, and a few other things) is listed honestly in <a href="limitations.md">Limitations</a>.</p>
+
+<h2>Next steps</h2>
+
+<ul>
+<li><a href="how-copying-works.md">How copying works</a> — what actually happens during a copy, and how link rewriting keeps your copy self-contained.</li>
+<li><a href="options-reference.md">Options reference</a> — every option, its default, and exactly what it does.</li>
+<li><a href="troubleshooting.md">Troubleshooting</a> — the questions we expect, answered before you ask.</li>
+</ul>
+
+<p>Stuck? Email <strong>support@nobo.dev</strong> with the source and destination space keys and roughly when you started the copy — we&#x27;ll take it from there.</p>
+<footer>Sure Copy — copy Confluence spaces &amp; page trees with links intact. by nobo · support@nobo.dev</footer></body></html>

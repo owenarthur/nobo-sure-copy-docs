@@ -1,0 +1,97 @@
+<!doctype html><html><head><meta charset=utf-8><meta name=viewport content='width=device-width,initial-scale=1'><title>Privacy Policy — Sure Copy</title><style>body{max-width:760px;margin:40px auto;padding:0 20px;font:16px/1.6 -apple-system,Segoe UI,Roboto,sans-serif;color:#172B4D}h1,h2,h3{color:#0747A6;line-height:1.25}code{background:#F4F5F7;padding:1px 5px;border-radius:4px;font-size:.9em}pre{background:#F4F5F7;padding:14px;border-radius:8px;overflow:auto}a{color:#0052CC}nav{margin:0 0 30px;padding-bottom:14px;border-bottom:1px solid #DFE1E6;font-size:14px}nav a{margin-right:14px}.brand{font-weight:700;color:#0052CC}footer{margin-top:50px;padding-top:16px;border-top:1px solid #DFE1E6;color:#6B778C;font-size:13px}</style></head><body><nav><span class="brand">Sure Copy</span> · <a href="index.html">Docs home</a> <a href="getting-started.html">Getting started</a> <a href="how-copying-works.html">How it works</a> <a href="limitations.html">Limitations</a> <a href="troubleshooting.html">Troubleshooting</a> <a href="faq.html">FAQ</a> · <a href="privacy.html">Privacy</a> <a href="eula.html">EULA</a></nav><h1>Privacy Policy — Sure Copy</h1>
+
+<p><strong>Effective date:</strong> [SET AT PUBLICATION]</p>
+<p><strong>Data controller / vendor:</strong> Owen Arthur, trading as nobo.dev (&quot;we&quot;, &quot;us&quot;) — ⚑ *Titan: confirm legal entity form (sole trader vs company) before publication; this line must match the Marketplace vendor profile used for Partner Verification.*</p>
+<p><strong>Contact:</strong> support@nobo.dev — ⚑ *Titan: confirm this mailbox exists and is monitored before submission; it is referenced in the listing, this policy, and the EULA.*</p>
+
+<p>This policy describes how Sure Copy (the &quot;App&quot;), an application for Confluence Cloud distributed through the Atlassian Marketplace, handles data. We have tried to keep it short because the honest answer is: the App is built so that we handle almost nothing.</p>
+
+<h2>1. The one-paragraph version</h2>
+
+<p>Sure Copy is built on Atlassian Forge and runs entirely on Atlassian-hosted infrastructure. Your Confluence content is read and written <strong>inside Atlassian&#x27;s cloud</strong> to perform the copy you request. It is never transmitted to us, to our servers (we operate none), or to any third party. The only data the App stores is the bookkeeping needed to run and report on copy jobs, and it is stored in Atlassian&#x27;s app storage attached to your own Confluence site.</p>
+
+<h2>2. What the App accesses</h2>
+
+<p>To perform a copy, the App reads and writes Confluence data via Atlassian&#x27;s APIs, under the scopes you approve at installation:</p>
+
+<ul>
+<li><strong>Read</strong> pages, attachments, labels, comments, and space details in the source space or page tree you select.</li>
+<li><strong>Write</strong> pages, attachments, labels, and (optionally) comments in the destination you select.</li>
+</ul>
+
+<p>This access happens transiently, inside Atlassian&#x27;s infrastructure, solely to execute the copy job you started. Page content is processed in memory during the job and is not retained by the App after the job completes, except as described in Section 3.</p>
+
+<p>Before a job runs, the App verifies — as you, using your own permissions — that you can read the source and create content in the destination. The App will not copy content you cannot yourself access.</p>
+
+<h2>3. What the App stores</h2>
+
+<p>The App stores <strong>job metadata</strong> in Forge hosted storage (Atlassian-hosted key-value storage scoped to your site and this App):</p>
+
+<ul>
+<li>Job records: source and destination space/page identifiers, selected options, job status and phase, timestamps, page counts.</li>
+<li>ID mappings: pairs of (source page/attachment ID → new page/attachment ID), used to rewrite links correctly and to make jobs safely resumable.</li>
+<li>Error reports: per-page error strings for anything that could not be copied (these may include page titles, which can themselves contain personal data if your page titles do — we store nothing else from page content).</li>
+<li>The Atlassian <strong>accountId</strong> of the user who started each job, so job history shows who ran what. This is the only user identifier the App stores. We do not store names, email addresses, or profile data.</li>
+<li>Aggregate operational counters (e.g. number of jobs run, pages copied) — counts only, never content.</li>
+</ul>
+
+<p>The App does <strong>not</strong> store copies of page bodies, attachments, or comments in its own storage. The copied content lives where you&#x27;d expect: in the destination Confluence space, as ordinary Confluence content owned by your site.</p>
+
+<h2>4. What never happens</h2>
+
+<ul>
+<li><strong>No egress.</strong> The App makes no network calls outside Atlassian. There are no third-party APIs, CDNs, webhooks, or external services.</li>
+<li><strong>No third-party analytics or tracking.</strong> We use none — not even &quot;anonymous&quot; analytics services.</li>
+<li><strong>No servers of ours.</strong> All compute runs on Atlassian Forge, inside Atlassian&#x27;s cloud.</li>
+<li><strong>No selling, sharing, or secondary use of data.</strong> We have no access to your content, so there is nothing to sell, share, or train on.</li>
+<li><strong>No PII collection beyond the accountId</strong> described in Section 3.</li>
+</ul>
+
+<p>Because of this architecture, the App is designed to meet the requirements of Atlassian&#x27;s <strong>Runs on Atlassian</strong> program (Atlassian-hosted compute and storage, no data egress). *[Reference the badge here only once Atlassian has applied it to the listing — it is auto-detected, not self-declared.]*</p>
+
+<h2>5. Data residency</h2>
+
+<p>Because the App uses only Atlassian-hosted compute and storage, App data is hosted in line with the data residency of your Confluence Cloud site, as provided by the Forge platform. If your site is pinned to a region, Forge hosted storage for the App follows Atlassian&#x27;s data-residency support for Forge apps.</p>
+
+<h2>6. Data retention and deletion</h2>
+
+<ul>
+<li><strong>Job metadata</strong> persists so you can view job history and resume interrupted jobs. You can delete individual job records from the App&#x27;s job history at any time. *(⚑ confirm the delete-job-record UI action ships in MVP; if not, adjust this sentence to &quot;on request&quot;.)*</li>
+<li><strong>On uninstall</strong>, the App&#x27;s stored data is deleted in accordance with the Atlassian Forge platform&#x27;s data lifecycle for app storage: Atlassian removes Forge hosted storage associated with an uninstalled app after uninstallation (subject to Atlassian&#x27;s short platform-level retention window that allows reinstallation). We retain nothing independently, because we hold nothing independently.</li>
+<li><strong>Support correspondence</strong> (emails you send to support@nobo.dev) is retained in our mailbox for as long as needed to support you, and you may request its deletion at any time.</li>
+</ul>
+
+<h2>7. Who can see what</h2>
+
+<ul>
+<li><strong>You and your Confluence site&#x27;s users</strong>: copied content, per your site&#x27;s normal Confluence permissions; job history within the App per its access rules.</li>
+<li><strong>Atlassian</strong>: operates the infrastructure the App runs on, under your existing agreement with Atlassian and Atlassian&#x27;s own privacy policy.</li>
+<li><strong>Us (nobo.dev)</strong>: we cannot access your site&#x27;s content or the App&#x27;s stored data on your site. Forge log access is customer-gated: if you contact support, you may choose to grant us access to the App&#x27;s logs for your site to help debug an issue. Logs contain job diagnostics (IDs, error strings), not page bodies.</li>
+</ul>
+
+<h2>8. Legal bases (for users in the EEA/UK)</h2>
+
+<p>Where GDPR or UK GDPR applies, the App&#x27;s processing of the data described above is carried out on behalf of your organization as necessary for the performance of the service you request (copying content you direct it to copy), and our handling of support correspondence is based on our legitimate interest in providing support. Your organization&#x27;s agreement with Atlassian governs the underlying platform processing.</p>
+
+<p>*⚑ Lawyer-glance item: if targeting EU enterprise customers, consider whether a lightweight DPA template is worth offering; for a no-egress Forge app the common position is that the vendor is not a processor of site content at all, but a one-page statement to that effect reassures procurement teams.*</p>
+
+<h2>9. Children</h2>
+
+<p>The App is a workplace tool distributed to organizations via the Atlassian Marketplace and is not directed at children.</p>
+
+<h2>10. Changes to this policy</h2>
+
+<p>We will post any changes to this policy at this URL and note material changes in the App&#x27;s release notes on the Atlassian Marketplace. The effective date at the top always reflects the current version.</p>
+
+<h2>11. Contact</h2>
+
+<p>Questions, deletion requests, or complaints: <strong>support@nobo.dev</strong>.</p>
+
+<p>---</p>
+<p>*Drafting notes (remove before publication):*</p>
+<ul>
+<li>*Host this at a stable public URL (docs space or nobo.dev) and link it in the Marketplace listing&#x27;s Privacy &amp; Security tab — a privacy policy is a listing-approval requirement (developer.atlassian.com/platform/marketplace/app-approval-guidelines/, accessed 2026-07-03).*</li>
+<li>*Verify at submission time that the manifest&#x27;s scope list matches Section 2&#x27;s plain-English description (including the classic <code>write:confluence-file</code> scope needed for attachment upload — describe it as &quot;write attachments&quot;).*</li>
+<li>*Re-verify the Forge post-uninstall storage-retention window against current Atlassian docs at publication and cite it precisely if Atlassian states a number.*</li>
+</ul>
+<footer>Sure Copy — copy Confluence spaces &amp; page trees with links intact. by nobo · support@nobo.dev</footer></body></html>

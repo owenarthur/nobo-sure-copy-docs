@@ -1,0 +1,80 @@
+<!doctype html><html><head><meta charset=utf-8><meta name=viewport content='width=device-width,initial-scale=1'><title>Limitations — Sure Copy</title><style>body{max-width:760px;margin:40px auto;padding:0 20px;font:16px/1.6 -apple-system,Segoe UI,Roboto,sans-serif;color:#172B4D}h1,h2,h3{color:#0747A6;line-height:1.25}code{background:#F4F5F7;padding:1px 5px;border-radius:4px;font-size:.9em}pre{background:#F4F5F7;padding:14px;border-radius:8px;overflow:auto}a{color:#0052CC}nav{margin:0 0 30px;padding-bottom:14px;border-bottom:1px solid #DFE1E6;font-size:14px}nav a{margin-right:14px}.brand{font-weight:700;color:#0052CC}footer{margin-top:50px;padding-top:16px;border-top:1px solid #DFE1E6;color:#6B778C;font-size:13px}</style></head><body><nav><span class="brand">Sure Copy</span> · <a href="index.html">Docs home</a> <a href="getting-started.html">Getting started</a> <a href="how-copying-works.html">How it works</a> <a href="limitations.html">Limitations</a> <a href="troubleshooting.html">Troubleshooting</a> <a href="faq.html">FAQ</a> · <a href="privacy.html">Privacy</a> <a href="eula.html">EULA</a></nav><h1>Limitations</h1>
+
+<p><strong>What Sure Copy does not copy (yet) — and how you&#x27;ll know.</strong></p>
+
+<p>We list these up front because silent data loss is worse than a documented limitation. Some of the things below are deliberate design decisions; some are simply not built yet. Each item says which it is, and how it shows up (or doesn&#x27;t) after a copy. If one of these blocks you, tell us — support@nobo.dev — roadmap priority comes largely from these reports.</p>
+
+<h2>Content types</h2>
+
+<h3>Inline comments — not copied (by design, for now)</h3>
+
+<p>Inline comments are anchored to exact text positions inside a page. There is no reliable way to re-anchor them onto a copied page — the anchor data doesn&#x27;t survive the copy, and guessing produces comments attached to the wrong text. Copying them badly would be worse than not copying them, so we don&#x27;t. <strong>How you&#x27;ll know:</strong> copied pages simply have no inline comments; nothing in the report flags this, because it applies to every page uniformly.</p>
+
+<h3>Footer comments — not copied (not yet built)</h3>
+
+<p>Page (footer) comments are not carried over in the current version. Copyable footer comments are on the roadmap as an option. <strong>How you&#x27;ll know:</strong> copied pages have no comments.</p>
+
+<h3>Whiteboards, databases, and folders — not copied (not yet built)</h3>
+
+<p>Confluence&#x27;s newer content types are not part of the copy: the app copies *pages*. In the current version they are <strong>not detected or itemised in the completion report either</strong> — the report covers pages, attachments, and labels. If your source space contains whiteboards, databases, or folders, check for them in the source before you rely on the copy. Detection-and-reporting is the next planned improvement, with copy support to follow. <strong>How you&#x27;ll know:</strong> for now, only by looking at the source space yourself. We&#x27;d rather tell you that plainly than imply a safety net that isn&#x27;t there yet.</p>
+
+<h3>Blog posts — not copied</h3>
+
+<p>The current version copies the space&#x27;s pages. Blog posts are not included. <strong>How you&#x27;ll know:</strong> the new space&#x27;s blog is empty.</p>
+
+<h3>Drafts and version history</h3>
+
+<p>Only the current published version of each page is copied. Drafts are not copied, and the copy starts its version history from scratch — the source page&#x27;s history does not come across. Pages are created in the destination as normal, current pages; an archived state on a source page is not preserved.</p>
+
+<h2>Space-level</h2>
+
+<h3>Space permissions — not copied (by design)</h3>
+
+<p>The destination space is created with your site&#x27;s default space permissions. Copying permissions would require admin-level scopes that the app deliberately does not request — a small permission footprint is part of the design (and part of why installation is easy to approve). <strong>What to do:</strong> set permissions on the new space after the copy, as you would for any new space. <strong>How you&#x27;ll know:</strong> the new space behaves like any freshly created space.</p>
+
+<h3>Page restrictions — not copied</h3>
+
+<p>Per-page view/edit restrictions on source pages are not recreated on the copies. If the source space contains restricted pages, review the copied space&#x27;s access before sharing it. Note also that the pre-copy permission check is at the *space* level: it verifies you can view the source space, not each individual page.</p>
+
+<h3>Space description, icon, and settings — not copied</h3>
+
+<p>The new space gets the name and key you chose, and nothing else from the source space&#x27;s settings.</p>
+
+<h2>Links</h2>
+
+<h3><code>/x/</code> short links — left as-is, with a warning</h3>
+
+<p>Short links (<code>/wiki/x/AbCdE</code>) are opaque codes that can&#x27;t be mechanically rewritten to the new space. Sure Copy leaves them unchanged and records a warning against the page for each one, so you know exactly where they are. They keep working — they just point at the original page. See <a href="how-copying-works.md#what-appname-deliberately-leaves-alone">How copying works</a>.</p>
+
+<h3>Links to pages outside the copy</h3>
+
+<p>Left untouched on purpose — they still point where they should. Not a limitation so much as a decision, but people ask.</p>
+
+<h2>Structural</h2>
+
+<h3>Duplicate page titles in the source space</h3>
+
+<p>Confluence Cloud can allow two pages with the same title in one space. Sure Copy&#x27;s resume-safety mechanism identifies already-copied pages by title, so if your source space has two pages with *exactly* the same title, the copy will contain <strong>one</strong> page for that title, and links to either original resolve to it. Title-based links to a duplicated title are rewritten with an &quot;ambiguous: duplicate title&quot; warning recorded on the job. If your space uses duplicate titles deliberately, rename one before copying.</p>
+
+<h3>Manual page ordering</h3>
+
+<p>Parent/child hierarchy is preserved exactly, but a manually dragged sibling order in the page tree is not — siblings appear in Confluence&#x27;s default order in the copy.</p>
+
+<h2>Scope of the app</h2>
+
+<h3>Copying between two Confluence sites — not supported</h3>
+
+<p>Sure Copy works within one Confluence Cloud site. Cross-site copying is a different security and permissions model entirely (your content would have to leave the site boundary, which this app never does — that guarantee is worth more than the feature). For cross-site synchronisation, other tools exist that specialise in it.</p>
+
+<h3>Copying into an existing space, or copying a single page tree — not yet</h3>
+
+<p>Every copy currently targets a brand-new space. Copying a page tree into an existing space (and a &quot;copy page tree&quot; action on individual pages) is on the roadmap.</p>
+
+<p>---</p>
+
+<h2>How you&#x27;ll know, in general</h2>
+
+<p>Every copy ends with a completion summary — pages, attachments, labels — plus a per-page issues panel for anything that failed mid-copy, and recorded warnings for every link the rewriter deliberately left alone. What the report does *not* yet do is inventory unsupported content types in the source space; until it does, treat this page as that inventory&#x27;s checklist.</p>
+
+<p>Roadmap, in the order we currently intend it: detection-and-reporting of whiteboards/databases/folders → footer comments option → page-tree copy into existing spaces → whiteboard/database copy support. If your priority differs, say so: support@nobo.dev.</p>
+<footer>Sure Copy — copy Confluence spaces &amp; page trees with links intact. by nobo · support@nobo.dev</footer></body></html>
