@@ -1,0 +1,41 @@
+<!doctype html><html><head><meta charset=utf-8><meta name=viewport content='width=device-width,initial-scale=1'><title>Security — Sure Copy</title><style>body{max-width:760px;margin:40px auto;padding:0 20px;font:16px/1.6 -apple-system,Segoe UI,Roboto,sans-serif;color:#172B4D}h1,h2,h3{color:#0747A6;line-height:1.25}code{background:#F4F5F7;padding:1px 5px;border-radius:4px;font-size:.9em}pre{background:#F4F5F7;padding:14px;border-radius:8px;overflow:auto}a{color:#0052CC}nav{margin:0 0 30px;padding-bottom:14px;border-bottom:1px solid #DFE1E6;font-size:14px}nav a{margin-right:14px}.brand{font-weight:700;color:#0052CC}footer{margin-top:50px;padding-top:16px;border-top:1px solid #DFE1E6;color:#6B778C;font-size:13px}</style></head><body><nav><span class="brand">Sure Copy</span> · <a href="index.html">Docs home</a> <a href="getting-started.html">Getting started</a> <a href="how-copying-works.html">How it works</a> <a href="limitations.html">Limitations</a> <a href="troubleshooting.html">Troubleshooting</a> <a href="faq.html">FAQ</a> · <a href="privacy.html">Privacy</a> <a href="security.html">Security</a> <a href="eula.html">EULA</a></nav><h1>Security — Sure Copy</h1>
+
+<p><strong>Effective date:</strong> 4 July 2026</p>
+<p><strong>Vendor:</strong> nobo.dev &nbsp;·&nbsp; <strong>Security contact:</strong> <a href="mailto:support@nobo.dev">support@nobo.dev</a></p>
+
+<h2>Architecture: Runs on Atlassian</h2>
+<p>Sure Copy is a Forge app that runs entirely on Atlassian's infrastructure. All of its compute and storage are Atlassian-hosted. It qualifies for Atlassian's <strong>Runs on Atlassian</strong> program, which means:</p>
+<ul>
+<li><strong>Zero data egress.</strong> Your content never leaves Atlassian. The app makes no calls to any external server, third-party service, analytics provider, or remote API.</li>
+<li><strong>No remote infrastructure.</strong> There are no servers, databases, or logs operated by us outside of Atlassian's platform.</li>
+<li><strong>No credentials collected.</strong> The app never asks for, receives, or stores Atlassian passwords, API tokens, or personal access tokens (PATs). It authenticates through Atlassian's Forge platform using granted OAuth scopes.</li>
+</ul>
+
+<h2>What data the app handles</h2>
+<ul>
+<li><strong>Your Confluence content, in transit only.</strong> During a copy, the app reads pages, attachments, and labels from the source space and writes them to the destination — all through Atlassian's Confluence APIs, entirely within your Atlassian site. It does not retain copies of your content.</li>
+<li><strong>Minimal job metadata.</strong> To run and resume copy jobs, the app stores small records in Atlassian's Forge storage (KVS): the Atlassian account ID of the user who started the job, source/destination identifiers, page IDs and titles, and job status. This never leaves Atlassian and can be deleted from the app's job history.</li>
+<li><strong>Anonymous usage counts.</strong> The app keeps simple aggregate counters (number of jobs, pages, attachments copied) in Forge storage. These are counts only — they contain no page content and no personal data.</li>
+</ul>
+
+<h2>Access &amp; permissions (least privilege)</h2>
+<p>The app requests only the scopes it needs to copy content, and no administrative scopes:</p>
+<ul>
+<li><code>read/write:space:confluence</code> — read the source space and create the destination space.</li>
+<li><code>read/write:page:confluence</code> — read source pages and create the copies.</li>
+<li><code>read/write:attachment:confluence</code> and <code>write:confluence-file</code> — copy page attachments.</li>
+<li><code>read/write:label:confluence</code> — copy page labels.</li>
+<li><code>storage:app</code> — store job state in Atlassian's Forge storage.</li>
+</ul>
+<p>Before any copy runs, the app verifies — as the requesting user — that they are permitted to read the source and create the destination. It does not escalate a user's privileges.</p>
+
+<h2>Data retention &amp; deletion</h2>
+<p>Job records live in Atlassian's Forge storage for your site. You can delete an individual job record from the app's history at any time. When the app is uninstalled, its Forge storage is removed by Atlassian per the Forge platform's data-retention behavior.</p>
+
+<h2>Platform security &amp; maintenance</h2>
+<p>The app relies on Atlassian's Forge platform for its runtime, storage, network isolation, and platform-level patching. Application dependencies are kept current and reviewed for known vulnerabilities. All communication with Confluence happens over Atlassian's platform (TLS-protected).</p>
+
+<h2>Reporting a security issue</h2>
+<p>Please report suspected security issues to <a href="mailto:support@nobo.dev">support@nobo.dev</a>. We aim to acknowledge reports within a few business days.</p>
+
+<footer>Sure Copy — copy Confluence spaces &amp; page trees with links intact. by nobo · support@nobo.dev</footer></body></html>
